@@ -2,7 +2,7 @@ package Dunce::time;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use overload    '""'    =>  \&timize,
                 '0+'    =>  \&timize,
@@ -42,10 +42,12 @@ sub _get_callback {
 	};
 	/^:FIX/i && return sub {
 	    my($this, $that) = @_;
+	    require Carp;
 	    Carp::carp $dying_msg, " I'll fix it.";
 	    return $this <=> $that; # goes to num_compare()
 	};
-	return sub {
+	/^:DIE/i && return sub {
+	    require Carp;
 	    Carp::croak $dying_msg;
 	};
     }
@@ -89,11 +91,11 @@ Dunce::time - Protects against sloppy use of time.
 =head1 DESCRIPTION
 
 On Sun Sep 9 01:46:40 2001 GMT, time_t (UNIX epoch) reaches 10 digits. 
-Sorting C<time()>'s as strings will cause unexpected result after
+Sorting time()'s as strings will cause unexpected result after
 that.
 
-When Dunce::time is used, it provides special version of C<time()>
-which will die with a message when compared as strings.
+When Dunce::time is used, it provides special version of time() which
+will die with a message when compared as strings.
 
 =head1 USAGE
 
@@ -126,6 +128,6 @@ it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<D::oh::Year>, L<overload>, L<perl>
+L<Dunce::time::Zerofill>, L<D::oh::Year>, L<overload>, L<perl>
 
 =cut
